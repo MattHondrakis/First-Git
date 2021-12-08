@@ -1,0 +1,123 @@
+---
+title: "UN Votes"
+author: "Matthew Hondrakis"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+date: "`r format(Sys.time(), '%d %B %Y')`"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(broom)
+theme_set(theme_bw())
+knitr::opts_chunk$set(echo = FALSE)
+
+unvotes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-23/unvotes.csv')
+roll_calls <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-23/roll_calls.csv')
+issues <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-23/issues.csv')
+
+#Joining data + Convert session to year
+un_joined <- unvotes %>%
+  inner_join(roll_calls, by = "rcid") %>%
+  inner_join(issues, by = "rcid") %>%
+  mutate(session = session + 1945) %>%
+  rename(year = session)
+```
+
+```{r}
+#By year and country + (%yes) 
+un_year_country <- un_joined %>%
+  group_by(year, country) %>%
+  mutate(pct_yes = mean(vote == "yes"))
+
+
+# US Graph %yes by year
+un_year_country %>%
+  filter(country == "United States", importantvote <= 1) %>%
+  ggplot(aes(year, pct_yes)) + geom_line() + facet_grid(rows = vars(issue), cols = vars(importantvote), scales = "free_x") +
+  geom_smooth(method = "lm", se = FALSE)
+
+```
+
+
+```{r}
+#check highest %yes
+un_year_country %>%
+  arrange(-pct_yes)
+
+#US top 'yes' voting issue
+un_year_country %>%
+  filter(country == "United States", importantvote == 1) %>%
+  group_by(issue) %>%
+  summarize(avg = mean(vote == "yes")) %>%
+  ggplot(aes(avg, fct_reorder(issue, avg))) + geom_col()
+
+#US & Canada Bar plot on issues
+un_joined %>%
+  filter(country %in% c("United States", "Canada")) %>%
+  group_by(issue, country) %>%
+  summarize(avg = mean(vote == "yes")) %>%
+  ggplot(aes(avg, issue)) + geom_col() + facet_wrap(~country)
+
+#Checking important vote
+un_joined %>%
+  filter(importantvote == 1) %>%
+  group_by(country) %>%
+  summarize(n = mean(vote == "yes")) %>%
+  arrange(-n)
+
+un_year_country %>%
+  filter(country == "Chile") %>%
+  ggplot(aes(y = vote)) + geom_bar()
+```
+
+```{r}
+#Selecting specific columns
+filtered_un <- un_year_country %>%
+  select(country, importantvote, pct_yes, issue, year)
+
+#Testing models
+test <- filtered_un %>%
+  nest(-country,-importantvote) %>%
+  mutate(linear = map(data, ~lm(pct_yes ~ year, .))) %>%
+  mutate(tidy = map(linear, tidy)) %>%
+  unnest(tidy)
+
+#Tibble without nested columns
+new_tb <- test %>%
+  select(-data, -linear)
+
+#Removing intercept terms
+new_tb_coef <- new_tb %>%
+  filter(term == "year")
+
+#Check estimate values
+new_tb_coef %>%
+  filter(p.adjust(p.value) <= 0.05, importantvote <= 1) %>%
+  arrange(estimate)
+
+#Plot countries with interesting estimates
+filtered_un %>%
+  filter(country == "South Sudan", importantvote <= 1) %>%
+  ggplot(aes(year, pct_yes)) + geom_line() + 
+  facet_grid(rows = vars(issue), cols = vars(importantvote), scales = "free_x") + 
+  geom_smooth(method = "lm", se = FALSE)
+
+
+#Check Sudans votes for Nuclear
+un_year_country %>%
+  filter(country == "South Sudan", issue == "Nuclear weapons and nuclear material") %>%
+  ggplot(aes(vote, color = year)) + geom_bar()
+```
+
+
+
+```{r}
+
+```
+
+

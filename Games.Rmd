@@ -1,0 +1,55 @@
+---
+title: "Games"
+author: "Matthew"
+output:
+    html_document:
+    toc: true
+    toc_float: true
+date: "`r format(Sys.time(), '%d %B %Y')`"
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+theme_set(theme_classic())
+games_read <- readr::read_csv(
+  'https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-03-16/games.csv')
+games <- games_read %>%
+  mutate(year = as.factor(year), avg_peak_perc = as.double(str_remove(avg_peak_perc, "%")))
+games <- games %>%
+  group_by(gamename, year) %>%
+  mutate(year_avg = mean(avg)) %>%
+  ungroup()
+```
+
+
+```{r echo=FALSE}
+games %>%
+  filter(year == "2019") %>%
+  distinct(gamename, year, year_avg) %>%
+  arrange(desc(year_avg)) %>%
+  top_n(10) %>%
+  ggplot(aes(x = fct_reorder(gamename, year_avg), y = year_avg)) + geom_col() + coord_flip()
+```
+
+```{r}
+games %>%
+  group_by(gamename, year) %>%
+  arrange(desc(avg))
+```
+
+```{r echo=FALSE}
+games %>%
+  filter(gamename == c("PLAYERUNKNOWN'S BATTLEGROUNDS", "Counter-Strike: Global Offensive", "Dota 2")) %>%
+  ggplot(aes(year, avg, fill = month)) + geom_col() + coord_flip() + facet_wrap(~gamename)
+games %>%
+  filter(!gamename %in% c("PLAYERUNKNOWN'S BATTLEGROUNDS", "Counter-Strike: Global Offensive", "Dota 2")) %>%
+  top_n(20, wt = avg) %>%
+  arrange(desc(avg)) %>%
+  group_by(gamename) %>%
+  mutate(total = sum(avg)) %>%
+  ggplot(aes(fct_reorder(gamename, total),  avg, fill = year)) + geom_col() + coord_flip()
+```
+
