@@ -35,7 +35,7 @@ music_joined %>%
   group_by(performer) %>%
   summarize(n = mean(week_position == 1)) %>%
   arrange(-n) %>%
-  slice(1:10) %>%
+  head(10) %>%
   ggplot(aes(n, fct_reorder(performer, n))) + geom_col()
 
 #Number of times on top 1
