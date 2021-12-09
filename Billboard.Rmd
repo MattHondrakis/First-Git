@@ -54,6 +54,11 @@ music_joined %>%
   summarize(n = mean(week_position <= 20), speechiness = speechiness) %>%
   ggplot(aes(speechiness, n)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
 
+#Number of songs at top 1 by performer
+music_joined %>%
+  group_by(performer) %>%
+  summarize(n = n_distinct(song_id[week_position == 1])) %>%
+  arrange(-n)
 
 sample <- music_joined %>%
   select(weeks_on_chart, tempo, speechiness, liveness, danceability)
