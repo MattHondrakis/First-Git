@@ -40,10 +40,10 @@ music_joined %>%
 
 #Number of times on top 1
 music_joined %>%
-  group_by(performer) %>%
-  summarize(n = sum(week_position == 1)) %>%
+  group_by(performer, song_id) %>%
+  summarize(n = sum(week_position == 1), .groups = "drop") %>%
   arrange(-n) %>%
-  slice(1:10) %>%
+  head(10) %>%
   ggplot(aes(n, fct_reorder(performer, n))) + geom_col()
 
 #Week position by speechiness
