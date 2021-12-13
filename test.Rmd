@@ -167,11 +167,9 @@ ggplot(stest, aes(y = `math`, color = `parent ed`)) +
 ### Writing
 
 ```{r fig.show = "hold", message=FALSE, warning=FALSE}
-ggplot(stest, aes(`writing`, color = `parent ed`)) +
-  geom_density() + theme_classic()
-ggplot(stest, aes(y = `writing`, color = `parent ed`)) +
-  geom_boxplot() + theme_classic() + theme(axis.text.x = element_blank(),
-                                           axis.ticks.x = element_blank())
+plott <- ggplot(stest, aes(`writing`, color = `parent ed`)) + theme_classic()
+plott + geom_density()
+plott + geom_boxplot() + theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) + labs(x = "")
 ```
 
 # Scrap
