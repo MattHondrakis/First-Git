@@ -17,6 +17,7 @@ editor_options:
 library(tidyverse)
 library(GGally)
 library(plotly)
+theme_set(theme_bw())
 stest <- read_csv("StudentsPerformance.csv", col_types = "fffffddd")
 stest <- stest %>%
   rename(`parent ed` =`parental level of education`,
@@ -59,11 +60,13 @@ There is a clear correlation between the pair of scores. With the highest **corr
 ### Math
 
 ```{r fig.show = "hold", message=FALSE, warning=FALSE}
-ggplot(stest, aes(`math`, color = `gender`)) +
-  geom_density() + theme_classic()
-ggplot(stest, aes(y = `math`, color = `gender`)) +
-  geom_boxplot() + theme_classic() + theme(axis.text.x = element_blank(),
-                                           axis.ticks.x = element_blank())
+gplot <- function(data = stest, x, color){
+  ggplot(data, aes({{x}}, color = {{color}}))
+}
+gplot(stest, math, gender) + geom_density()
+
+gplot(stest, math, gender) + geom_boxplot() + theme(axis.text.y = element_blank(),
+                                                         axis.ticks.y = element_blank())
 ```
 
 
@@ -79,11 +82,10 @@ With 99% confidence, we can assume the difference in means between the two gende
 ### Writing
 
 ```{r fig.show = "hold", message=FALSE, warning=FALSE}
-ggplot(stest, aes(`writing`, color = `gender`)) +
-  geom_density() + theme_classic()
-ggplot(stest, aes(y = `writing`, color = `gender`)) +
-  geom_boxplot() + theme_classic() + theme(axis.text.x = element_blank(),
-                                           axis.ticks.x = element_blank())
+gplot(stest,writing, gender) + geom_density()
+
+gplot(stest, writing, gender) + geom_boxplot() + theme(axis.text.y = element_blank(),
+                                                       axis.ticks.y = element_blank())
 ```
 
 
@@ -101,11 +103,10 @@ As we expected, with 99% confidence, we can assume the difference in means betwe
 ### Math
 
 ```{r fig.show = "hold", warning= FALSE, message=FALSE, echo=TRUE}
-ggplot(stest, aes(`math`, color = `race/ethnicity`)) +
-  geom_density() + theme_classic()
-ggplot(stest, aes(y = `math`, color = `race/ethnicity`)) +
-  geom_boxplot() + theme_classic() + theme(axis.text.x = element_blank(),
-                                           axis.ticks.x = element_blank())
+gplot(stest, math, `race/ethnicity`) + geom_density()
+
+gplot(stest, math, `race/ethnicity`) + geom_boxplot() + theme(axis.text.y = element_blank(),
+                                                              axis.ticks.y = element_blank())
 ```
 
 An Analysis of Variance would provide more insight into the possible group differences.
@@ -138,11 +139,10 @@ stest %>%
 ### Writing
 
 ```{r fig.show = "hold", message=FALSE, warning=FALSE}
-ggplot(stest, aes(`writing`, color = `race/ethnicity`)) +
-  geom_density() + theme_classic()
-ggplot(stest, aes(y = `writing`, color = `race/ethnicity`)) +
-  geom_boxplot() + theme_classic() + theme(axis.text.x = element_blank(),
-                                           axis.ticks.x = element_blank())
+gplot(stest, writing, `race/ethnicity`) + geom_density()
+
+gplot(stest, writing, `race/ethnicity`) + geom_boxplot() + theme(axis.text.y = element_blank(),
+                                                              axis.ticks.y = element_blank())
 ```
 
 The difference is less clear with respect to *writing*. Running an ANOVA test here may provide more answers.
@@ -156,25 +156,35 @@ summary(aov(writing~`race/ethnicity`, stest))
 ### Math
 
 ```{r fig.show = "hold", message=FALSE, warning=FALSE}
-ggplot(stest, aes(`math`, color = `parent ed`)) +
-  geom_density() + theme_classic()
-ggplot(stest, aes(y = `math`, color = `parent ed`)) +
-  geom_boxplot() + theme_classic() + theme(axis.text.x = element_blank(),
-                                           axis.ticks.x = element_blank())
+gplot(stest, math, `parent ed`) + geom_density()
+
+gplot(stest, math, `parent ed`) + geom_boxplot() + theme(axis.text.y = element_blank(),
+                                                              axis.ticks.y = element_blank())
 ```
 
 
 ### Writing
 
 ```{r fig.show = "hold", message=FALSE, warning=FALSE}
-plott <- ggplot(stest, aes(`writing`, color = `parent ed`)) + theme_classic()
-plott + geom_density()
-plott + geom_boxplot() + theme(axis.ticks.y = element_blank(), axis.text.y = element_blank()) + labs(x = "")
+gplot(stest, writing, `race/ethnicity`) + geom_density()
+
+gplot(stest, writing, `race/ethnicity`) + geom_boxplot() + theme(axis.text.y = element_blank(),
+                                                              axis.ticks.y = element_blank())
+```
+
+# Plotly
+
+```{r}
+p <- stest %>%
+  ggplot(aes(math, color = `test prep`)) + geom_density() +
+  theme_bw() + facet_wrap(~ `race/ethnicity`)
+ggplotly(p)
 ```
 
 # Scrap
 
 ### Test prep by Parent education
+
 
 ```{r}
 counted <- stest %>%
@@ -201,13 +211,6 @@ stest %>%
   ggplot(aes(math, color = `test prep`)) + geom_density() +
   theme_bw()
 
-```
-
-```{r}
-p <- stest %>%
-  ggplot(aes(math, color = `test prep`)) + geom_density() +
-  theme_bw() + facet_wrap(~ `race/ethnicity`)
-ggplotly(p)
 ```
 
 
