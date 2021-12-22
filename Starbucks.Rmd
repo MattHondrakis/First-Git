@@ -139,7 +139,12 @@ starbucks %>%
 
 ```{r}
 
-# 
+# Carbs by fiber and sugar
+
+summary(lm(total_carbs_g ~ fiber_g + sugar_g, starbucks))
+
+
+
 ```
 
 
