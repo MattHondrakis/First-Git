@@ -1,0 +1,122 @@
+---
+title: "Starbucks"
+author: "Matthew"
+date: "12/22/2021"
+output: html_document
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+theme_set(theme_bw())
+starbucks <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-12-21/starbucks.csv')
+
+glimpse(starbucks)
+starbucks %>%
+  count(milk, sort = TRUE) # count different columns
+
+starbucks$milk <- as.factor(starbucks$milk) # change to factor with levels
+levels(starbucks$milk) <- list("none" = 0, "nonfat" = 1, "2%" = 2,
+                               "soy" = 3, "coconut" = 4, "whole" = 5)
+
+starbucks %>%
+  count(trans_fat_g)
+starbucks$trans_fat_g[starbucks$trans_fat_g == "02"] <- "0.2"
+
+```
+
+```{r}
+
+starbucks %>%
+  ggplot(aes(whip, calories, group = whip)) + geom_boxplot()
+wo_whip <- starbucks %>%
+  filter(whip == 0) # without whip
+summary(aov(calories ~ milk, wo_whip))
+
+```
+
+
+```{r}
+
+# Calories by milk, facet by whip
+starbucks %>%
+  ggplot(aes(milk, calories)) + geom_boxplot() + facet_wrap(~whip)
+
+```
+
+
+```{r}
+
+# with milk only plot
+starbucks %>%
+  filter(milk != "none") %>%
+  ggplot(aes(milk, calories)) + geom_boxplot() + facet_wrap(~whip)
+
+```
+
+```{r}
+
+# with milk aov
+w_milk <- starbucks %>%
+  filter(milk != "none")
+
+summary(aov(calories ~ milk, w_milk))
+
+starbucks %>%
+  count(milk)
+
+```
+
+```{r}
+
+# df for attempting pairs of t.tests
+quickt <- starbucks %>%
+  filter(milk == "nonfat" | milk == "2%")
+t.test(calories ~ milk, quickt)
+
+# Pairwise t.test 
+pairwise.t.test(starbucks$calories, starbucks$milk, p.adjust.method = "none",
+                pool.sd = FALSE)
+
+starbucks %>%
+  ggplot(aes(size, calories)) + geom_boxplot()
+
+```
+
+```{r}
+
+# top 15 median calorie drinks
+starbucks %>%
+  group_by(product_name) %>%
+  summarize(n = median(calories)) %>%
+  arrange(-n) %>%
+  head(15) %>%
+  ggplot(aes(n, fct_reorder(product_name, n))) + geom_col() + labs(y = "name")
+
+```
+
+```{r}
+
+# Comparing fat and carbs, relating to calories
+starbucks %>%
+  select(calories, total_fat_g, total_carbs_g) %>%
+  gather(-calories, key = "nutrient", value = "value") %>%
+  ggplot(aes(x = value, y = calories, alpha = 0.2)) + geom_jitter() + 
+  facet_wrap(~nutrient) + geom_smooth(method = "lm")
+
+# Linear model with fat and carbs
+summary(lm(calories ~ total_fat_g + total_carbs_g, starbucks)) # correctly predicts calories with Coef(4(carbs) and 10(fat)), which is close to empirical values
+```
+
+```{r}
+
+starbucks_fct <- starbucks %>%
+  select(caffeine_mg, calories) %>%
+  mutate(caffeine_mg = as.factor(caffeine_mg)) # Caffeine to factor
+starbucks_fct %>%
+  ggplot(aes(fct_lump(caffeine_mg, 12), calories)) + geom_boxplot() + labs(x = "caffeine")
+
+
+```
