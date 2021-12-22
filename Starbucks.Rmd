@@ -20,10 +20,13 @@ starbucks %>%
 starbucks$milk <- as.factor(starbucks$milk) # change to factor with levels
 levels(starbucks$milk) <- list("none" = 0, "nonfat" = 1, "2%" = 2,
                                "soy" = 3, "coconut" = 4, "whole" = 5)
-
 starbucks %>%
   count(trans_fat_g)
 starbucks$trans_fat_g[starbucks$trans_fat_g == "02"] <- "0.2"
+
+starbucks <- starbucks %>%
+  mutate(trans_fat_g = as.numeric(trans_fat_g),
+         fiber_g = as.numeric(fiber_g))
 
 ```
 
@@ -112,6 +115,7 @@ summary(lm(calories ~ total_fat_g + total_carbs_g, starbucks)) # correctly predi
 
 ```{r}
 
+# caffeine and calories
 starbucks_fct <- starbucks %>%
   select(caffeine_mg, calories) %>%
   mutate(caffeine_mg = as.factor(caffeine_mg)) # Caffeine to factor
@@ -120,3 +124,18 @@ starbucks_fct %>%
 
 
 ```
+
+```{r}
+
+# Caffeine and serving size
+starbucks %>%
+  ggplot(aes(serv_size_m_l, caffeine_mg, group = serv_size_m_l)) + geom_boxplot()
+
+starbucks %>%
+  filter(serv_size_m_l == 0) %>%
+  count(product_name, sort = TRUE)
+
+```
+
+
+
