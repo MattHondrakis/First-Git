@@ -178,23 +178,24 @@ starbucks %>%
   filter(size == "venti") %>%
   group_by(serv_size_m_l) %>%
   count(product_name, sort = TRUE)
-```
 
+# New (Iced/Frapp = Cold) column
+temp_star <- starbucks %>%
+  filter(size == "venti") %>%
+  mutate(temp = as.factor(ifelse(grepl('Iced|Frappuccino', product_name), "Cold", "Hot")))
 
-```{r}
-starbucks %>%
-  filter(size == "venti" & grepl('Iced|Frappuccino', product_name)) %>%
-  group_by(serv_size_m_l) %>%
-  count()
+# Venti mL compared with temp
+temp_star %>%
+  ggplot(aes(temp, serv_size_m_l, color = temp)) + geom_jitter() + labs(y = "Serving Size (mL)")
 
-starbucks %>%
-  filter(size == "venti" & serv_size_m_l == 591) %>%
+temp_star %>%
+  filter(temp == "Hot" & serv_size_m_l > 650) %>%
   count(product_name, sort = TRUE)
 
-starbucks %>%
-  select(product_name, sugar_g, total_carbs_g) %>%
-  filter(15 < sugar_g & sugar_g <25 & total_carbs_g < 15) %>%
-  arrange(-total_carbs_g)
-
+temp_star %>%
+  group_by(temp, serv_size_m_l) %>%
+  summarize(n = n()) %>%
+  ggplot(aes(temp, n, fill = as.factor(serv_size_m_l))) + geom_col()
 ```
+
 
