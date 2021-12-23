@@ -195,7 +195,7 @@ temp_star %>%
 temp_star %>%
   group_by(temp, serv_size_m_l) %>%
   summarize(n = n()) %>%
-  ggplot(aes(temp, n, fill = as.factor(serv_size_m_l))) + geom_col()
+  ggplot(aes(temp, n, fill = as.factor(serv_size_m_l))) + geom_col(position = "dodge")
 ```
 
 
