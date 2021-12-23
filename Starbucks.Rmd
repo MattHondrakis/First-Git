@@ -2,7 +2,10 @@
 title: "Starbucks"
 author: "Matthew"
 date: "12/22/2021"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
 editor_options:
   chunk_output_type: console
 ---
@@ -30,6 +33,7 @@ starbucks <- starbucks %>%
 
 ```
 
+# Calories
 ```{r}
 
 starbucks %>%
@@ -100,6 +104,7 @@ starbucks %>%
 
 ```
 
+## Carbs and Fat
 ```{r}
 
 # Comparing fat and carbs, relating to calories
@@ -113,6 +118,7 @@ starbucks %>%
 summary(lm(calories ~ total_fat_g + total_carbs_g, starbucks)) # correctly predicts calories with Coef(4(carbs) and 10(fat)), which is close to empirical values
 ```
 
+# Caffeine
 ```{r}
 
 # caffeine and calories
@@ -121,11 +127,6 @@ starbucks_fct <- starbucks %>%
   mutate(caffeine_mg = as.factor(caffeine_mg)) # Caffeine to factor
 starbucks_fct %>%
   ggplot(aes(fct_lump(caffeine_mg, 12), calories)) + geom_boxplot() + labs(x = "caffeine")
-
-
-```
-
-```{r}
 
 # Caffeine and serving size
 starbucks %>%
@@ -137,15 +138,9 @@ starbucks %>%
 
 ```
 
+# Carbs, Fiber and Sugar
 ```{r}
 
-# Carbs by fiber and sugar: CONTINUE LATER
-
-summary(lm(total_carbs_g ~ fiber_g + sugar_g, starbucks))
-
-```
-
-```{r}
 # Lm total carbs by sugar and fiber
 summary(lm(total_carbs_g ~ fiber_g + sugar_g, starbucks))
 
@@ -165,7 +160,7 @@ starbucks %>%
   summarize(mdiff = mean(diff))
 ```
 
-
+# Serving size and mL
 ```{r}
 # Checking size and serv_size
 starbucks %>%
@@ -182,20 +177,87 @@ starbucks %>%
 # New (Iced/Frapp = Cold) column
 temp_star <- starbucks %>%
   filter(size == "venti") %>%
-  mutate(temp = as.factor(ifelse(grepl('Iced|Frappuccino', product_name), "Cold", "Hot")))
+  mutate(temp = as.factor(
+    ifelse(str_detect(product_name,
+                      'Iced|Frappuccino|Cold|ice|Refreshers|Lemonade'),
+           "Cold", "Hot")))
 
 # Venti mL compared with temp
 temp_star %>%
   ggplot(aes(temp, serv_size_m_l, color = temp)) + geom_jitter() + labs(y = "Serving Size (mL)")
 
-temp_star %>%
-  filter(temp == "Hot" & serv_size_m_l > 650) %>%
-  count(product_name, sort = TRUE)
+# Chisq
+chisq.test(table(temp_star$temp, temp_star$serv_size_m_l))
 
+# Plot counting the 2 different mL sizes by Hot/Cold drinks
 temp_star %>%
   group_by(temp, serv_size_m_l) %>%
-  summarize(n = n()) %>%
-  ggplot(aes(temp, n, fill = as.factor(serv_size_m_l))) + geom_col(position = "dodge")
+  ggplot(aes(as.factor(serv_size_m_l), fill = temp)) + 
+  geom_bar(position = position_dodge(preserve = 'single')) + labs(y = "count", x = "Size (mL)") +
+  scale_fill_hue(direction = -1)
+
+# Checking specifics from plot
+temp_star %>%
+  filter(temp == "Cold" & serv_size_m_l == 591) %>%
+  count(product_name)
+
+# Calories by size mL for Venti
+temp_star %>%
+  group_by(serv_size_m_l) %>%
+  ggplot(aes(serv_size_m_l, calories, group = serv_size_m_l)) + 
+  geom_boxplot() + geom_jitter(width = 10, alpha = 0.2)
+
+# Checking smaller (591 mL) calories being greater than median(709 mL) calories
+temp_star %>%
+  filter(serv_size_m_l == 591 &
+           calories > median(calories[serv_size_m_l == 709]) & 
+           whip == 0) %>%
+  View()
 ```
 
+# Sodium
+```{r}
+## Sodium 
+starbucks %>%
+  select(product_name, sodium_mg, size) %>%
+  arrange(-sodium_mg) %>%
+  View()
+
+# Looking into Chocolate/Chip and its relationship to sodium
+starbucks %>%
+  filter(!size %in% c("doppio", "solo", "quad", "triple", "1 shot")) %>%   # filtered out low sodium/small sizes
+  group_by(chocolate = str_detect(product_name, 'Chip|Choco'), size) %>%   # group by chocolate/chip/mocha
+  summarize(m_sodium = mean(sodium_mg)) %>%
+  arrange(-m_sodium)
+
+starbucks %>%
+  filter(!size %in% c("doppio", "solo", "quad", "triple", "1 shot")) %>%
+  group_by(chocolate = str_detect(product_name, 'Chip|Choco'), size) %>%
+  ungroup() %>%
+  filter(chocolate == FALSE) %>%
+  select(product_name, sodium_mg) %>%
+  arrange(-sodium_mg)
+
+
+# Sodium by frappuccino
+starbucks %>%
+  filter(!size %in% c("doppio", "solo", "quad", "triple", "1 shot")) %>%   # filtered out low sodium/small sizes
+  group_by(frappuccino = str_detect(product_name, 'Frappuccino'), size) %>%   # group by frappuccino
+  summarize(m_sodium = mean(sodium_mg)) %>%
+  arrange(-m_sodium)
+
+# Bar plot of sodium by size and frap-status
+starbucks %>%
+  filter(!size %in% c("doppio", "solo", "quad", "triple", "1 shot")) %>%   # filtered out low sodium/small sizes
+  group_by(frappuccino = str_detect(product_name, 'Frappuccino'), size) %>%   # group by frappuccino
+  summarize(m_sodium = mean(sodium_mg)) %>%
+  ggplot(aes(fct_relevel(size, c("1 scoop", "trenta", "short", "tall", "grande", "venti")),
+             m_sodium, fill = frappuccino)) + 
+  geom_col(position = "dodge") + labs(x = "Size", y = "Aerage sodium (mg)")
+
+t.test(starbucks$sodium_mg ~ grepl('Frappuccino', starbucks$product_name))
+t.test(starbucks$sodium_mg ~ grepl('Chip|Choco', starbucks$product_name))
+
+
+```
 
