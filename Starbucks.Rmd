@@ -261,3 +261,57 @@ t.test(starbucks$sodium_mg ~ grepl('Chip|Choco', starbucks$product_name))
 
 ```
 
+## Cholesterol 
+
+```{r}
+# Cholesterol possible predictors 
+summary(lm(cholesterol_mg ~ milk + whip + total_fat_g, starbucks))
+
+# Milk and whip contain fat, thus lm by fat alone
+summary(lm(cholesterol_mg ~ total_fat_g, starbucks))
+
+# Box plot of cholesterol by milk, separated by whip
+starbucks %>%
+  group_by(milk) %>%
+  ggplot(aes(milk, cholesterol_mg)) + geom_boxplot() + facet_wrap(~whip) +
+  labs(x = "Milk", y = "Cholesterol (mg)")
+
+starbucks %>% 
+  group_by(cholesterol_mg) %>%
+  summarize(fat = mean(total_fat_g)) %>%
+  ggplot(aes(cholesterol_mg, fat)) + geom_point() + 
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(y = "Average fat (g)", x = "Cholesterol (mg)")
+
+
+# Non-cow milk with no whip cream
+starbucks %>%
+  filter(str_detect(milk, 'none|soy|coconut') & whip == 0) %>%
+  summarize(pct = mean(cholesterol_mg <= 5)) # Percent of 5 or less mg of cholesterol drinks
+
+starbucks %>%
+  filter(str_detect(milk, 'none') & whip == 0 & cholesterol_mg > 5) %>%
+  View()  # Large sizes of "Vanilla Sweet Cream Cold Brew" 
+
+
+starbucks %>%
+  filter(str_detect(milk, 'none|soy|coconut') & whip == 0 & cholesterol_mg > 5) %>%
+  View()
+```
+
+
+## Total fat
+```{r}
+
+# Total fat by trans/saturated fat
+summary(lm(total_fat_g ~ trans_fat_g + saturated_fat_g, starbucks))
+
+# Total fat by milk, whip, size
+summary(lm(total_fat_g ~ milk + whip + size, starbucks))
+
+starbucks %>%
+  arrange(-total_fat_g, milk, whip) %>%
+  View()
+
+```
+
