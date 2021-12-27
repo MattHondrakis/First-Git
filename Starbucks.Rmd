@@ -170,6 +170,9 @@ summary(lm(total_carbs_g ~ fiber_g + sugar_g, starbucks))
 
 
 Total carbs by sugar, colored by fiber
+   
+    
+    
 ```{r}
 starbucks %>%
   ggplot(aes(sugar_g, total_carbs_g, color = fiber_g)) + geom_point()
