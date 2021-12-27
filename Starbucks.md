@@ -436,20 +436,55 @@ Milk and whip contain fat, thus lm by fat alone
 ![](Starbucks_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
     
     
+The 4 outlier drinks for cholesterol with no milk
+
+```
+## # A tibble: 5 x 3
+##   product_name                  size   cholesterol_mg
+##   <chr>                         <chr>           <dbl>
+## 1 Vanilla Sweet Cream Cold Brew tall               20
+## 2 Vanilla Sweet Cream Cold Brew grande             20
+## 3 Vanilla Sweet Cream Cold Brew venti              40
+## 4 Vanilla Sweet Cream Cold Brew trenta             40
+## 5 Skinny Hot Chocolate          venti              10
+```
+    
+    
+The outlier drinks for the non cow milk drinks
+
+```
+## # A tibble: 12 x 3
+##    product_name                  size   cholesterol_mg
+##    <chr>                         <chr>           <dbl>
+##  1 Vanilla Sweet Cream Cold Brew tall               20
+##  2 Vanilla Sweet Cream Cold Brew grande             20
+##  3 Vanilla Sweet Cream Cold Brew venti              40
+##  4 Vanilla Sweet Cream Cold Brew trenta             40
+##  5 Caffè Mocha                   tall               25
+##  6 Cinnamon Dolce Latte          tall               20
+##  7 White Chocolate Mocha         short              20
+##  8 Iced White Chocolate Mocha    venti              10
+##  9 Iced White Chocolate Mocha    venti              10
+## 10 Hot Chocolate                 short              20
+## 11 Skinny Hot Chocolate          venti              10
+## 12 White Hot Chocolate           short              20
+```
+
+    
+    
 Percentage of *non cow milk* drinks that have at most **5 mg** of cholesterol 
 
 ```
 ## # A tibble: 1 x 1
 ##     pct
 ##   <dbl>
-## 1 0.972
+## 1  97.2
 ```
 
 
 
 
-
-## Total fat
+# Total fat
 
 ```
 ## 
