@@ -4,6 +4,7 @@ author: "Matthew"
 date: "12/22/2021"
 output: 
   html_document:
+    keep_md: true
     toc: true
     toc_float: true
 editor_options:
@@ -30,20 +31,25 @@ starbucks$trans_fat_g[starbucks$trans_fat_g == "02"] <- "0.2"
 starbucks <- starbucks %>%
   mutate(trans_fat_g = as.numeric(trans_fat_g),
          fiber_g = as.numeric(fiber_g))
-
+starbucks$milk <- fct_relevel(starbucks$milk, c('none', 'soy', 'coconut',
+                                                'nonfat', '2%', 'whole'))
 ```
 
 # Calories
 ```{r}
-
 starbucks %>%
-  ggplot(aes(whip, calories, group = whip)) + geom_boxplot()
+  ggplot(aes(whip, calories, group = whip)) + geom_boxplot() +
+  labs(x = "Whip", y = "Calories", title = "Calories by whip")
+```
+
+## By Milk
+```{r}
 wo_whip <- starbucks %>%
-  filter(whip == 0) # without whip
+  filter(whip == 0) 
 summary(aov(calories ~ milk, wo_whip))
 
 ```
-
+Analysis of variance: calories by milk (no whip)
 
 ```{r}
 
@@ -76,6 +82,7 @@ starbucks %>%
 
 ```
 
+### Preliminary Statistical Analysis
 ```{r}
 
 # df for attempting pairs of t.tests
@@ -88,7 +95,8 @@ pairwise.t.test(starbucks$calories, starbucks$milk, p.adjust.method = "none",
                 pool.sd = FALSE)
 
 starbucks %>%
-  ggplot(aes(size, calories)) + geom_boxplot()
+  ggplot(aes(fct_reorder(size, calories), calories)) + geom_boxplot() +
+  labs(x = "Size", y = "Calories", title = "Calories by size")
 
 ```
 
@@ -115,8 +123,10 @@ starbucks %>%
   facet_wrap(~nutrient) + geom_smooth(method = "lm")
 
 # Linear model with fat and carbs
-summary(lm(calories ~ total_fat_g + total_carbs_g, starbucks)) # correctly predicts calories with Coef(4(carbs) and 10(fat)), which is close to empirical values
+summary(lm(calories ~ total_fat_g + total_carbs_g, starbucks)) 
 ```
+Correctly predicts calories with Coef(4(carbs) and 10(fat)), which is close to empirical values.
+
 
 # Caffeine
 ```{r}
@@ -184,7 +194,8 @@ temp_star <- starbucks %>%
 
 # Venti mL compared with temp
 temp_star %>%
-  ggplot(aes(temp, serv_size_m_l, color = temp)) + geom_jitter() + labs(y = "Serving Size (mL)")
+  ggplot(aes(temp, serv_size_m_l, color = temp)) + geom_jitter() + labs(y = "Serving Size (mL)") + 
+  scale_color_hue(direction = -1)
 
 # Chisq
 chisq.test(table(temp_star$temp, temp_star$serv_size_m_l))
