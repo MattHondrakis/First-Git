@@ -326,19 +326,16 @@ Chocolate
 t.test(starbucks$sodium_mg ~ grepl('Chip|Choco', starbucks$product_name))
 ```
 
-## Cholesterol 
+# Cholesterol 
 ```{r}
 # Cholesterol possible predictors 
 summary(lm(cholesterol_mg ~ milk + whip + total_fat_g, starbucks))
+```
 
+Milk and whip contain fat, thus lm by fat alone
+```{r}
 # Milk and whip contain fat, thus lm by fat alone
 summary(lm(cholesterol_mg ~ total_fat_g, starbucks))
-
-# Box plot of cholesterol by milk, separated by whip
-starbucks %>%
-  group_by(milk) %>%
-  ggplot(aes(milk, cholesterol_mg)) + geom_boxplot() + facet_wrap(~whip) +
-  labs(y = "Cholesterol (mg)")
 
 starbucks %>% 
   group_by(cholesterol_mg) %>%
@@ -346,25 +343,47 @@ starbucks %>%
   ggplot(aes(cholesterol_mg, fat)) + geom_point() + 
   geom_smooth(method = "lm", se = FALSE) +
   labs(y = "Average fat (g)", x = "Cholesterol (mg)")
-
-
-# Non-cow milk with no whip cream
-starbucks %>%
-  filter(str_detect(milk, 'none|soy|coconut') & whip == 0) %>%
-  summarize(pct = mean(cholesterol_mg <= 5)) # Percent of 5 or less mg of cholesterol drinks
-
-starbucks %>%
-  filter(str_detect(milk, 'none') & whip == 0 & cholesterol_mg > 5) %>%
-  View()  # Large sizes of "Vanilla Sweet Cream Cold Brew" 
-
-
-starbucks %>%
-  filter(str_detect(milk, 'none|soy|coconut') & whip == 0 & cholesterol_mg > 5) %>%
-  View()
 ```
 
 
-## Total fat
+```{r}
+# Box plot of cholesterol by milk, separated by whip
+starbucks %>%
+  group_by(milk) %>%
+  ggplot(aes(milk, cholesterol_mg)) + geom_boxplot() + facet_wrap(~whip) +
+  labs(y = "Cholesterol (mg)", title = "Cholesterol by milk, separated by whip")
+```
+    
+    
+The 4 outlier drinks for cholesterol with no milk
+```{r}
+starbucks %>%
+  filter(str_detect(milk, 'none') & whip == 0 & cholesterol_mg > 5) %>%  # Large sizes of "Vanilla Sweet Cream Cold Brew" 
+  select(product_name, size, cholesterol_mg)
+```
+    
+    
+The outlier drinks for the non cow milk drinks
+```{r}
+starbucks %>%
+  filter(str_detect(milk, 'none|soy|coconut') & whip == 0 & cholesterol_mg > 5) %>%
+  select(product_name, size, cholesterol_mg)
+```
+
+    
+    
+Percentage of *non cow milk* drinks that have at most **5 mg** of cholesterol 
+```{r}
+# Non-cow milk with no whip cream
+starbucks %>%
+  filter(str_detect(milk, 'none|soy|coconut') & whip == 0) %>%
+  summarize(pct = mean(cholesterol_mg <= 5)*100) # Percent of 5 or less mg of cholesterol drinks
+```
+
+
+
+
+# Total fat
 ```{r}
 
 # Total fat by trans/saturated fat

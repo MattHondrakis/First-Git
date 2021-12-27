@@ -27,10 +27,10 @@ Analysis of variance: calories by milk (no whip)
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
-Calories by milk, faceted by whip
+
 ![](Starbucks_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
-Plot by milk, excluding "none"
+
 ![](Starbucks_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 
@@ -80,7 +80,7 @@ Pairwise t.test for calories by milk
 ## By Size
 ![](Starbucks_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
-Top 15 median calorie drinks
+
 ![](Starbucks_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
 ## By Carbs and Fat
@@ -112,13 +112,15 @@ Top 15 median calorie drinks
 ## Multiple R-squared:  0.9829,	Adjusted R-squared:  0.9829 
 ## F-statistic: 3.284e+04 on 2 and 1144 DF,  p-value: < 2.2e-16
 ```
-Correctly predicts calories with coefficients being close to empirical values   
+Correctly predicts calories with coefficients being close to empirical values.   
 **Carbs** = 4   
 **Fat** = 10
 
 
 # Caffeine
 ![](Starbucks_files/figure-html/unnamed-chunk-11-1.png)<!-- -->![](Starbucks_files/figure-html/unnamed-chunk-11-2.png)<!-- -->
+
+Names of drinks that are labeled with 0 mL
 
 ```
 ## # A tibble: 6 x 2
@@ -133,6 +135,8 @@ Correctly predicts calories with coefficients being close to empirical values
 ```
 
 # Carbs, Fiber and Sugar
+
+Lm total carbs by sugar and fiber
 
 ```
 ## 
@@ -156,7 +160,11 @@ Correctly predicts calories with coefficients being close to empirical values
 ## F-statistic: 1.481e+05 on 2 and 1144 DF,  p-value: < 2.2e-16
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+
+Total carbs by sugar, colored by fiber
+![](Starbucks_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+Average sugar and fiber per drink
 
 ```
 ## # A tibble: 1 x 2
@@ -165,11 +173,13 @@ Correctly predicts calories with coefficients being close to empirical values
 ## 1  35.0 0.866
 ```
 
+Checking if fiber + sugar = total carbs
+
 ```
 ## # A tibble: 1 x 1
-##   mdiff
-##   <dbl>
-## 1  1.86
+##   mean_difference
+##             <dbl>
+## 1            1.86
 ```
 
 # Serving size and mL
@@ -192,6 +202,10 @@ Correctly predicts calories with coefficients being close to empirical values
 ## 11           591 venti     135
 ## 12           709 venti     185
 ```
+Venti is served in two different mL quantities    
+   
+   
+Checking venti size having two different mL
 
 ```
 ## # A tibble: 85 x 3
@@ -211,7 +225,23 @@ Correctly predicts calories with coefficients being close to empirical values
 ## # ... with 75 more rows
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
+
+```r
+# New (Iced/Frapp/etc = Cold) column
+temp_star <- starbucks %>%
+  filter(size == "venti") %>%
+  mutate(temp = as.factor(
+    ifelse(str_detect(product_name,
+                      'Iced|Frappuccino|Cold|ice|Refreshers|Lemonade'),
+           "Cold", "Hot")))
+```
+
+
+![](Starbucks_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+   
+   
+Chi-squared test for temperature and mL
 
 ```
 ## 
@@ -221,7 +251,10 @@ Correctly predicts calories with coefficients being close to empirical values
 ## X-squared = 280.91, df = 1, p-value < 2.2e-16
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-13-2.png)<!-- -->
+Plot counting the 2 different mL quantities by Hot/Cold drinks
+![](Starbucks_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+
+
 
 ```
 ## # A tibble: 4 x 2
@@ -232,10 +265,15 @@ Correctly predicts calories with coefficients being close to empirical values
 ## 3 Iced Caramel Macchiato               5
 ## 4 Iced Skinny Cinnamon Dolce Latte     1
 ```
+The drinks that are cold and have lower mL quantities
 
-![](Starbucks_files/figure-html/unnamed-chunk-13-3.png)<!-- -->
+## Calories by size mL for Venti
+![](Starbucks_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 # Sodium
+
+
+## Chocolate
 
 ```
 ## `summarise()` has grouped output by 'chocolate'. You can override using the `.groups` argument.
@@ -275,6 +313,8 @@ Correctly predicts calories with coefficients being close to empirical values
 ## # ... with 886 more rows
 ```
 
+## Frappuccino
+
 ```
 ## `summarise()` has grouped output by 'frappuccino'. You can override using the `.groups` argument.
 ```
@@ -299,7 +339,10 @@ Correctly predicts calories with coefficients being close to empirical values
 ## `summarise()` has grouped output by 'frappuccino'. You can override using the `.groups` argument.
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+
+### T.test
+Frappuccino
 
 ```
 ## 
@@ -315,6 +358,8 @@ Correctly predicts calories with coefficients being close to empirical values
 ##            104.9373            230.1572
 ```
 
+Chocolate
+
 ```
 ## 
 ## 	Welch Two Sample t-test
@@ -329,8 +374,7 @@ Correctly predicts calories with coefficients being close to empirical values
 ##            123.0681            208.7613
 ```
 
-## Cholesterol 
-
+# Cholesterol 
 
 ```
 ## 
@@ -359,6 +403,8 @@ Correctly predicts calories with coefficients being close to empirical values
 ## F-statistic:  2015 on 7 and 1139 DF,  p-value: < 2.2e-16
 ```
 
+Milk and whip contain fat, thus lm by fat alone
+
 ```
 ## 
 ## Call:
@@ -380,13 +426,17 @@ Correctly predicts calories with coefficients being close to empirical values
 ## F-statistic:  3579 on 1 and 1145 DF,  p-value: < 2.2e-16
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
-
 ```
 ## `geom_smooth()` using formula 'y ~ x'
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+
+
+![](Starbucks_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+    
+    
+Percentage of *non cow milk* drinks that have at most **5 mg** of cholesterol 
 
 ```
 ## # A tibble: 1 x 1
@@ -394,6 +444,9 @@ Correctly predicts calories with coefficients being close to empirical values
 ##   <dbl>
 ## 1 0.972
 ```
+
+
+
 
 
 ## Total fat
