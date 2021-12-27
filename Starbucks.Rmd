@@ -51,20 +51,20 @@ summary(aov(calories ~ milk, wo_whip))
 
 ```
 
-Calories by milk, faceted by whip
+
 ```{r}
 
 starbucks %>%
-  ggplot(aes(milk, calories)) + geom_boxplot() + facet_wrap(~whip)
+  ggplot(aes(milk, calories)) + geom_boxplot() + facet_wrap(~whip) + labs(title = "Calories by milk, faceted by whip")
 
 ```
 
-Plot by milk, excluding "none"
+
 ```{r}
 
 starbucks %>%
   filter(milk != "none") %>%
-  ggplot(aes(milk, calories)) + geom_boxplot() + facet_wrap(~whip)
+  ggplot(aes(milk, calories)) + geom_boxplot() + facet_wrap(~whip) + labs(title = "Plot by milk, excluding none")
 
 ```
 
@@ -106,7 +106,7 @@ starbucks %>%
 
 ```
 
-Top 15 median calorie drinks
+
 ```{r}
 
 # top 15 median calorie drinks
@@ -116,7 +116,7 @@ starbucks %>%
   arrange(-n) %>%
   head(15) %>%
   ggplot(aes(n, fct_reorder(product_name, n))) + geom_col() + labs(x = "median calories", y = "name", title = 
-                                                                     "Median Calories of Drinks")
+                                                                     "Top 15 Median Calories of Drinks")
 
 ```
 
