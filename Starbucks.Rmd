@@ -12,7 +12,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
 library(tidyverse)
 theme_set(theme_bw())
 starbucks <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-12-21/starbucks.csv')
@@ -43,26 +43,25 @@ starbucks %>%
 ```
 
 ## By Milk
+Analysis of variance: calories by milk (no whip)
 ```{r}
 wo_whip <- starbucks %>%
   filter(whip == 0) 
 summary(aov(calories ~ milk, wo_whip))
 
 ```
-Analysis of variance: calories by milk (no whip)
 
+Calories by milk, faceted by whip
 ```{r}
 
-# Calories by milk, facet by whip
 starbucks %>%
   ggplot(aes(milk, calories)) + geom_boxplot() + facet_wrap(~whip)
 
 ```
 
-
+Plot by milk, excluding "none"
 ```{r}
 
-# with milk only plot
 starbucks %>%
   filter(milk != "none") %>%
   ggplot(aes(milk, calories)) + geom_boxplot() + facet_wrap(~whip)
@@ -83,23 +82,31 @@ starbucks %>%
 ```
 
 ### Preliminary Statistical Analysis
-```{r}
 
+
+```{r eval=FALSE, include=FALSE}
 # df for attempting pairs of t.tests
 quickt <- starbucks %>%
   filter(milk == "nonfat" | milk == "2%")
 t.test(calories ~ milk, quickt)
+```
 
+Pairwise t.test for calories by milk
+```{r}
 # Pairwise t.test 
 pairwise.t.test(starbucks$calories, starbucks$milk, p.adjust.method = "none",
                 pool.sd = FALSE)
+```
 
+## By Size
+```{r}
 starbucks %>%
   ggplot(aes(fct_reorder(size, calories), calories)) + geom_boxplot() +
-  labs(x = "Size", y = "Calories", title = "Calories by size")
+  labs(title = "Calories by size")
 
 ```
 
+Top 15 median calorie drinks
 ```{r}
 
 # top 15 median calorie drinks
@@ -108,12 +115,13 @@ starbucks %>%
   summarize(n = median(calories)) %>%
   arrange(-n) %>%
   head(15) %>%
-  ggplot(aes(n, fct_reorder(product_name, n))) + geom_col() + labs(y = "name")
+  ggplot(aes(n, fct_reorder(product_name, n))) + geom_col() + labs(x = "median calories", y = "name", title = 
+                                                                     "Median Calories of Drinks")
 
 ```
 
-## Carbs and Fat
-```{r}
+## By Carbs and Fat
+```{r warning=FALSE}
 
 # Comparing fat and carbs, relating to calories
 starbucks %>%
@@ -125,12 +133,13 @@ starbucks %>%
 # Linear model with fat and carbs
 summary(lm(calories ~ total_fat_g + total_carbs_g, starbucks)) 
 ```
-Correctly predicts calories with Coef(4(carbs) and 10(fat)), which is close to empirical values.
+Correctly predicts calories with coefficients being close to empirical values.   
+**Carbs** = 4   
+**Fat** = 10
 
 
 # Caffeine
 ```{r}
-
 # caffeine and calories
 starbucks_fct <- starbucks %>%
   select(caffeine_mg, calories) %>%
@@ -140,8 +149,12 @@ starbucks_fct %>%
 
 # Caffeine and serving size
 starbucks %>%
-  ggplot(aes(serv_size_m_l, caffeine_mg, group = serv_size_m_l)) + geom_boxplot()
+  ggplot(aes(as.factor(serv_size_m_l), caffeine_mg)) + geom_boxplot() +
+  labs(x = "Serving Size (mL)", y = "Caffeine (mg)")
+```
 
+Names of drinks that are labeled with 0 mL
+```{r}
 starbucks %>%
   filter(serv_size_m_l == 0) %>%
   count(product_name, sort = TRUE)
@@ -149,25 +162,33 @@ starbucks %>%
 ```
 
 # Carbs, Fiber and Sugar
+
+Lm total carbs by sugar and fiber
 ```{r}
-
-# Lm total carbs by sugar and fiber
 summary(lm(total_carbs_g ~ fiber_g + sugar_g, starbucks))
+```
 
-# Total carbs by sugar, colored by fiber
+
+Total carbs by sugar, colored by fiber
+```{r}
 starbucks %>%
   ggplot(aes(sugar_g, total_carbs_g, color = fiber_g)) + geom_point()
+```
 
-# Average sugar and fiber per drink
+Average sugar and fiber per drink
+```{r}
 starbucks %>%
   summarize(sugar = mean(sugar_g),
             fiber = mean(fiber_g))
+```
 
-# Checking if fiber + sugar = total carbs
+Checking if fiber + sugar = total carbs
+```{r}
+
 starbucks %>%
   select(total_carbs_g, fiber_g, sugar_g) %>%
   mutate(diff = total_carbs_g - fiber_g - sugar_g) %>%
-  summarize(mdiff = mean(diff))
+  summarize(mean_difference = mean(diff))
 ```
 
 # Serving size and mL
@@ -177,46 +198,68 @@ starbucks %>%
   group_by(serv_size_m_l, size) %>%
   count() %>%
   arrange(size)
-
-# Checking venti having two different size_ml
+```
+Venti is served in two different mL quantities    
+   
+   
+Checking venti size having two different mL
+```{r}
 starbucks %>%
   filter(size == "venti") %>%
   group_by(serv_size_m_l) %>%
   count(product_name, sort = TRUE)
+```
 
-# New (Iced/Frapp = Cold) column
+
+```{r echo=TRUE}
+# New (Iced/Frapp/etc = Cold) column
 temp_star <- starbucks %>%
   filter(size == "venti") %>%
   mutate(temp = as.factor(
     ifelse(str_detect(product_name,
                       'Iced|Frappuccino|Cold|ice|Refreshers|Lemonade'),
            "Cold", "Hot")))
+```
 
+
+```{r}
 # Venti mL compared with temp
 temp_star %>%
   ggplot(aes(temp, serv_size_m_l, color = temp)) + geom_jitter() + labs(y = "Serving Size (mL)") + 
   scale_color_hue(direction = -1)
-
-# Chisq
+```
+   
+   
+Chi-squared test for temperature and mL
+```{r}
 chisq.test(table(temp_star$temp, temp_star$serv_size_m_l))
+```
 
-# Plot counting the 2 different mL sizes by Hot/Cold drinks
+Plot counting the 2 different mL quantities by Hot/Cold drinks
+```{r}
 temp_star %>%
   group_by(temp, serv_size_m_l) %>%
   ggplot(aes(as.factor(serv_size_m_l), fill = temp)) + 
-  geom_bar(position = position_dodge(preserve = 'single')) + labs(y = "count", x = "Size (mL)") +
+  geom_bar(position = position_dodge(preserve = 'single')) + labs(y = "count", x = "Size (mL)", 
+                                                                  title = "Number of Venti drinks by mL") +
   scale_fill_hue(direction = -1)
+```
 
+
+```{r}
 # Checking specifics from plot
 temp_star %>%
   filter(temp == "Cold" & serv_size_m_l == 591) %>%
   count(product_name)
+```
+The drinks that are cold and have lower mL quantities
 
-# Calories by size mL for Venti
+## Calories by size mL for Venti
+```{r}
 temp_star %>%
   group_by(serv_size_m_l) %>%
-  ggplot(aes(serv_size_m_l, calories, group = serv_size_m_l)) + 
-  geom_boxplot() + geom_jitter(width = 10, alpha = 0.2)
+  ggplot(aes(as.factor(serv_size_m_l), calories, group = serv_size_m_l)) + 
+  geom_boxplot() + geom_jitter(width = .15, alpha = 0.2) + labs(x = "Serving size (mL)")
 
 # Checking smaller (591 mL) calories being greater than median(709 mL) calories
 temp_star %>%
@@ -228,12 +271,15 @@ temp_star %>%
 
 # Sodium
 ```{r}
-## Sodium 
+# Sodium 
 starbucks %>%
   select(product_name, sodium_mg, size) %>%
   arrange(-sodium_mg) %>%
   View()
+```
 
+## Chocolate
+```{r}
 # Looking into Chocolate/Chip and its relationship to sodium
 starbucks %>%
   filter(!size %in% c("doppio", "solo", "quad", "triple", "1 shot")) %>%   # filtered out low sodium/small sizes
@@ -248,8 +294,10 @@ starbucks %>%
   filter(chocolate == FALSE) %>%
   select(product_name, sodium_mg) %>%
   arrange(-sodium_mg)
+```
 
-
+## Frappuccino
+```{r}
 # Sodium by frappuccino
 starbucks %>%
   filter(!size %in% c("doppio", "solo", "quad", "triple", "1 shot")) %>%   # filtered out low sodium/small sizes
@@ -265,15 +313,20 @@ starbucks %>%
   ggplot(aes(fct_relevel(size, c("1 scoop", "trenta", "short", "tall", "grande", "venti")),
              m_sodium, fill = frappuccino)) + 
   geom_col(position = "dodge") + labs(x = "Size", y = "Aerage sodium (mg)")
+```
 
+### T.test
+Frappuccino
+```{r}
 t.test(starbucks$sodium_mg ~ grepl('Frappuccino', starbucks$product_name))
+```
+
+Chocolate
+```{r}
 t.test(starbucks$sodium_mg ~ grepl('Chip|Choco', starbucks$product_name))
-
-
 ```
 
 ## Cholesterol 
-
 ```{r}
 # Cholesterol possible predictors 
 summary(lm(cholesterol_mg ~ milk + whip + total_fat_g, starbucks))
@@ -285,7 +338,7 @@ summary(lm(cholesterol_mg ~ total_fat_g, starbucks))
 starbucks %>%
   group_by(milk) %>%
   ggplot(aes(milk, cholesterol_mg)) + geom_boxplot() + facet_wrap(~whip) +
-  labs(x = "Milk", y = "Cholesterol (mg)")
+  labs(y = "Cholesterol (mg)")
 
 starbucks %>% 
   group_by(cholesterol_mg) %>%

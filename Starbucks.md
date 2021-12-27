@@ -17,6 +17,7 @@ editor_options:
 ![](Starbucks_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
 
 ## By Milk
+Analysis of variance: calories by milk (no whip)
 
 ```
 ##              Df  Sum Sq Mean Sq F value Pr(>F)    
@@ -25,11 +26,11 @@ editor_options:
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
-Analysis of variance: calories by milk (no whip)
 
+Calories by milk, faceted by whip
 ![](Starbucks_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
-
+Plot by milk, excluding "none"
 ![](Starbucks_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 
@@ -53,21 +54,12 @@ Analysis of variance: calories by milk (no whip)
 ## 6 whole     190
 ```
 
-### Prelimanary Statistical Analysis
+### Preliminary Statistical Analysis
 
-```
-## 
-## 	Welch Two Sample t-test
-## 
-## data:  calories by milk
-## t = -3.7021, df = 392.24, p-value = 0.0002444
-## alternative hypothesis: true difference in means is not equal to 0
-## 95 percent confidence interval:
-##  -69.16375 -21.18428
-## sample estimates:
-## mean in group nonfat     mean in group 2% 
-##             225.7207             270.8947
-```
+
+
+
+Pairwise t.test for calories by milk
 
 ```
 ## 
@@ -85,17 +77,19 @@ Analysis of variance: calories by milk (no whip)
 ## P value adjustment method: none
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+## By Size
+![](Starbucks_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
-![](Starbucks_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+Top 15 median calorie drinks
+![](Starbucks_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
 
-## Carbs and Fat
+## By Carbs and Fat
 
 ```
 ## `geom_smooth()` using formula 'y ~ x'
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 ```
 ## 
@@ -118,9 +112,13 @@ Analysis of variance: calories by milk (no whip)
 ## Multiple R-squared:  0.9829,	Adjusted R-squared:  0.9829 
 ## F-statistic: 3.284e+04 on 2 and 1144 DF,  p-value: < 2.2e-16
 ```
+Correctly predicts calories with coefficients being close to empirical values   
+**Carbs** = 4   
+**Fat** = 10
+
 
 # Caffeine
-![](Starbucks_files/figure-html/unnamed-chunk-9-1.png)<!-- -->![](Starbucks_files/figure-html/unnamed-chunk-9-2.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-11-1.png)<!-- -->![](Starbucks_files/figure-html/unnamed-chunk-11-2.png)<!-- -->
 
 ```
 ## # A tibble: 6 x 2
@@ -158,7 +156,7 @@ Analysis of variance: calories by milk (no whip)
 ## F-statistic: 1.481e+05 on 2 and 1144 DF,  p-value: < 2.2e-16
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 ```
 ## # A tibble: 1 x 2
@@ -213,7 +211,7 @@ Analysis of variance: calories by milk (no whip)
 ## # ... with 75 more rows
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ```
 ## 
@@ -223,7 +221,7 @@ Analysis of variance: calories by milk (no whip)
 ## X-squared = 280.91, df = 1, p-value < 2.2e-16
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-11-2.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-13-2.png)<!-- -->
 
 ```
 ## # A tibble: 4 x 2
@@ -235,7 +233,7 @@ Analysis of variance: calories by milk (no whip)
 ## 4 Iced Skinny Cinnamon Dolce Latte     1
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-11-3.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-13-3.png)<!-- -->
 
 # Sodium
 
@@ -301,7 +299,7 @@ Analysis of variance: calories by milk (no whip)
 ## `summarise()` has grouped output by 'frappuccino'. You can override using the `.groups` argument.
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 ```
 ## 
@@ -382,13 +380,13 @@ Analysis of variance: calories by milk (no whip)
 ## F-statistic:  3579 on 1 and 1145 DF,  p-value: < 2.2e-16
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 ```
 ## `geom_smooth()` using formula 'y ~ x'
 ```
 
-![](Starbucks_files/figure-html/unnamed-chunk-13-2.png)<!-- -->
+![](Starbucks_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
 
 ```
 ## # A tibble: 1 x 1
