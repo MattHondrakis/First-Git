@@ -160,8 +160,7 @@ Lm total carbs by sugar and fiber
 ## F-statistic: 1.481e+05 on 2 and 1144 DF,  p-value: < 2.2e-16
 ```
 
-
-Total carbs by sugar, colored by fiber
+ 
 ![](Starbucks_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 Average sugar and fiber per drink
