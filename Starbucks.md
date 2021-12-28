@@ -471,7 +471,7 @@ The outlier drinks for the non cow milk drinks
 
     
     
-Percentage of *non cow milk* drinks that have at most **5 mg** of cholesterol 
+Percentage of *non cow milk* drinks that have **at most 5 mg** of cholesterol 
 
 ```
 ## # A tibble: 1 x 1

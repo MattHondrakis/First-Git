@@ -372,7 +372,7 @@ starbucks %>%
 
     
     
-Percentage of *non cow milk* drinks that have at most **5 mg** of cholesterol 
+Percentage of *non cow milk* drinks that have **at most 5 mg** of cholesterol 
 ```{r}
 # Non-cow milk with no whip cream
 starbucks %>%
