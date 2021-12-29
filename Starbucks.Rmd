@@ -307,12 +307,12 @@ starbucks %>%
 
 # Bar plot of sodium by size and frap-status
 starbucks %>%
-  filter(!size %in% c("doppio", "solo", "quad", "triple", "1 shot")) %>%   # filtered out low sodium/small sizes
+  filter(size %in% c("tall", "grande", "venti"), milk != "none") %>% # filtered out low sodium/small sizes
+  mutate(whip = ifelse(whip == 1, "Whip", "No Whip")) %>%
   group_by(frappuccino = str_detect(product_name, 'Frappuccino'), size) %>%   # group by frappuccino
-  summarize(m_sodium = mean(sodium_mg)) %>%
-  ggplot(aes(fct_relevel(size, c("1 scoop", "trenta", "short", "tall", "grande", "venti")),
-             m_sodium, fill = frappuccino)) + 
-  geom_col(position = "dodge") + labs(x = "Size", y = "Aerage sodium (mg)")
+  ggplot(aes(fct_relevel(size, c("1 scoop", "trenta", "short", "tall", "grande", "venti")), sodium_mg, fill = frappuccino)) + 
+  stat_summary(fun = mean, geom = "bar", position = "dodge") + labs(x = "Size", y = "Average sodium (mg)") + 
+  facet_grid(rows = vars(whip), cols = vars(milk))
 ```
 
 ### T.test

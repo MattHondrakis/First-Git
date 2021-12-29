@@ -334,10 +334,6 @@ The drinks that are cold and have lower mL quantities
 ## 9 FALSE       1 scoop     22.5
 ```
 
-```
-## `summarise()` has grouped output by 'frappuccino'. You can override using the `.groups` argument.
-```
-
 ![](Starbucks_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
 ### T.test
