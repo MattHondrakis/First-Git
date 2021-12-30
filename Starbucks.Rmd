@@ -398,3 +398,41 @@ starbucks %>%
 
 ```
 
+
+# Model
+```{r}
+df <- starbucks %>%
+  mutate(status = as.factor(str_detect(product_name, 'Frappuccino')))
+```
+
+```{r}
+df_split <- initial_split(df, strata = status)
+
+df_training <- training(df_split)
+df_testing <- testing(df_split)
+
+model <- logistic_reg() %>%
+  set_engine('glm') %>%
+  set_mode('classification')
+
+df_fit <- model %>%
+  fit(status ~ sodium_mg + calories + whip + milk, data = df_training)
+
+pred_class <- df_fit %>% predict(df_testing, type = 'class')
+
+pred_prob <- df_fit %>% predict(df_testing, type = 'prob')
+
+df_results <- df_testing %>%
+  select(status) %>%
+  bind_cols(pred_class, pred_prob)
+
+conf_mat(df_results, status, .pred_class) %>% summary() %>% arrange(-.estimate)
+
+df_results %>%
+  roc_curve(status, .pred_FALSE) %>%
+  autoplot()
+
+```
+
+
+
