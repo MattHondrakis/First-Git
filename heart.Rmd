@@ -21,6 +21,7 @@ heart <- heart %>%
   rename_all(tolower) %>%
   mutate(across(where(is.character), as.factor),
          heartdisease = as.factor(heartdisease),
+         fastingbs = as.factor(fastingbs),
          chestpaintype = recode(chestpaintype, TA = "Typical Angina", ATA = "Atypical Angina", 
                                 NAP = "Non-Anginal Pain", ASY = "Anymptomatic"))
 ```
@@ -58,7 +59,65 @@ heart %>%
 heart %>%
   filter(sex == "M", cholesterol < 10) %>%
   View()
+
+heart %>%
+  ggplot(aes(cholesterol)) + geom_histogram()
+
+t.test(heart$cholesterol ~ heart$heartdisease)
 ```
+
+## Checking Numeric columns
+```{r}
+heart %>%
+  keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(value)) + geom_histogram() + facet_wrap(~key, scales = "free")
+```
+
+## Oldpeak
+```{r}
+heart %>%
+  count(oldpeak)
+
+heart %>%
+  ggplot(aes(oldpeak, color = heartdisease)) + geom_density()
+```
+
+## Exercise
+```{r}
+heart %>%
+  ggplot(aes(exerciseangina, fill = heartdisease)) + geom_bar(position = "dodge") + scale_fill_hue(direction = -1)
+```
+
+
+# Model
+```{r}
+library(tidymodels)
+heart_split <- initial_split(filter(heart, cholesterol != 0), strata = heartdisease)
+
+heart_train <- training(heart_split)
+heart_test <- testing(heart_split)
+
+heart_rec <- recipe(heartdisease ~ ., heart_train) %>%
+  step_dummy(all_nominal(), -all_outcomes()) %>%
+  step_normalize(all_numeric())
+
+logmodel <- logistic_reg() %>%
+  set_engine("glm")
+
+heart_wkfl <- workflow() %>%
+  add_model(logmodel) %>%
+  add_recipe(heart_rec)
+
+heart_fit <- heart_wkfl %>%
+  last_fit(heart_split)
+
+heart_fit %>% collect_metrics()
+heart_fit %>% collect_predictions() %>% roc_curve(heartdisease, .pred_0) %>% autoplot()
+```
+
+
+
 
 
 
