@@ -1,0 +1,85 @@
+---
+title: "Untitled"
+author: "Matthew"
+date: "12/7/2021"
+output: html_document
+---
+---
+title: "Billboard"
+author: "Matthew Hondrakis"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+date: "`r format(Sys.time(), '%d %B %Y')`"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+theme_set(theme_bw())
+knitr::opts_chunk$set(echo = FALSE)
+billboard <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-14/billboard.csv')
+audio <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-09-14/audio_features.csv')
+
+music_joined <- billboard %>%
+  inner_join(audio, by = c("song_id", "performer")) %>%
+  select(-url) %>%
+  mutate(score = 101 - week_position)
+
+```
+ 
+```{r}
+music_joined %>%
+  group_by(performer) %>%
+  summarize(n = max(weeks_on_chart)) %>%
+  arrange(-n)
+
+#Average top 1 by performer
+music_joined %>%
+  group_by(performer) %>%
+  summarize(n = mean(week_position == 1)) %>%
+  arrange(-n) %>%
+  slice(1:10) %>%
+  ggplot(aes(n, fct_reorder(performer, n))) + geom_col()
+
+#Number of times on top 1
+music_joined %>%
+  group_by(performer) %>%
+  summarize(n = sum(week_position == 1)) %>%
+  arrange(-n) %>%
+  slice(1:10) %>%
+  ggplot(aes(n, fct_reorder(performer, n))) + geom_col()
+
+#Week position by speechiness
+
+music_joined %>%
+  filter(!is.na(weeks_on_chart), !is.na(speechiness)) %>%
+  sample_n(100, replace = FALSE) %>%
+  summarize(n = mean(week_position <= 20), speechiness = speechiness) %>%
+  ggplot(aes(speechiness, n)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+
+
+sample <- music_joined %>%
+  select(weeks_on_chart, tempo, speechiness, liveness, danceability)
+
+fit <- lm(weeks_on_chart ~ tempo + speechiness + liveness + danceability, data = sample)
+summary(fit)
+
+#by danceability
+music_joined %>%
+  filter(!is.na(danceability)) %>%
+  group_by(danceability) %>%
+  summarize(n = sum(week_position == 1, na.rm = TRUE)) %>%
+  arrange(-n)
+
+music_joined %>%
+  filter(!is.na(danceability), week_position == 1) %>%
+  group_by(danceability) %>%
+  summarize(n = sum(week_position == 1)) %>%
+  ggplot(aes(danceability, n)) + geom_point() + geom_smooth(method = "lm", se = FALSE)
+```
+
+
+
