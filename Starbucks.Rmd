@@ -435,4 +435,12 @@ df_results %>%
 ```
 
 
+```{r}
+df_wkfl <- workflow() %>%
+  add_model(model) %>%
+  add_formula(status ~ sodium_mg + milk) %>%
+  last_fit(df_split)
+
+df_wkfl %>% collect_predictions() %>% roc_curve(status, .pred_FALSE) %>% autoplot()
+```
 
