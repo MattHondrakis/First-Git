@@ -93,6 +93,7 @@ heart %>%
 # Model
 ```{r}
 library(tidymodels)
+heart$heartdisease <- relevel(heart$heartdisease, "1")
 heart_split <- initial_split(filter(heart, cholesterol != 0), strata = heartdisease)
 
 heart_train <- training(heart_split)
@@ -113,7 +114,7 @@ heart_fit <- heart_wkfl %>%
   last_fit(heart_split)
 
 heart_fit %>% collect_metrics()
-heart_fit %>% collect_predictions() %>% roc_curve(heartdisease, .pred_0) %>% autoplot()
+heart_fit %>% collect_predictions() %>% roc_curve(heartdisease, .pred_1) %>% autoplot()
 ```
 
 
