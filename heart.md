@@ -109,22 +109,64 @@ editor_options:
 ## x dplyr::lag()      masks stats::lag()
 ## x yardstick::spec() masks readr::spec()
 ## x recipes::step()   masks stats::step()
-## * Use suppressPackageStartupMessages() to eliminate package startup messages
+## * Dig deeper into tidy modeling with R at https://www.tmwr.org
 ```
 
 ```
 ## # A tibble: 2 x 4
 ##   .metric  .estimator .estimate .config             
 ##   <chr>    <chr>          <dbl> <chr>               
-## 1 accuracy binary         0.845 Preprocessor1_Model1
-## 2 roc_auc  binary         0.912 Preprocessor1_Model1
+## 1 accuracy binary         0.882 Preprocessor1_Model1
+## 2 roc_auc  binary         0.925 Preprocessor1_Model1
 ```
 
 ![](heart_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
+```
+## # A tibble: 16 x 5
+##    term                           estimate std.error statistic  p.value
+##    <chr>                             <dbl>     <dbl>     <dbl>    <dbl>
+##  1 st_slope_Up                      1.31       0.690     1.90  0.0569  
+##  2 sex_M                           -1.21       0.368    -3.30  0.000982
+##  3 age                             -1.06       0.357    -2.97  0.00300 
+##  4 cholesterol                     -1.01       0.382    -2.64  0.00823 
+##  5 exerciseangina_Y                -0.992      0.336    -2.95  0.00314 
+##  6 restingecg_ST                    0.905      0.423     2.14  0.0324  
+##  7 restingecg_Normal                0.843      0.353     2.39  0.0170  
+##  8 st_slope_Flat                   -0.611      0.628    -0.973 0.331   
+##  9 restingbp                       -0.501      0.349    -1.44  0.151   
+## 10 chestpaintype_Atypical.Angina    0.481      0.358     1.35  0.179   
+## 11 chestpaintype_Non.Anginal.Pain   0.346      0.313     1.10  0.270   
+## 12 maxhr                           -0.248      0.364    -0.681 0.496   
+## 13 chestpaintype_Typical.Angina    -0.240      0.292    -0.821 0.412   
+## 14 (Intercept)                      0.214      0.310     0.689 0.491   
+## 15 oldpeak                         -0.148      0.371    -0.398 0.691   
+## 16 fastingbs_X1                    -0.0782     0.327    -0.239 0.811
+```
+
+## Model of Largestest Estimates
 
 
+## Plot both
+![](heart_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
+### Metrics
+
+```
+## # A tibble: 2 x 4
+##   .metric  .estimator .estimate .config             
+##   <chr>    <chr>          <dbl> <chr>               
+## 1 accuracy binary         0.882 Preprocessor1_Model1
+## 2 roc_auc  binary         0.925 Preprocessor1_Model1
+```
+
+```
+## # A tibble: 2 x 4
+##   .metric  .estimator .estimate .config             
+##   <chr>    <chr>          <dbl> <chr>               
+## 1 accuracy binary         0.850 Preprocessor1_Model1
+## 2 roc_auc  binary         0.911 Preprocessor1_Model1
+```
 
 
 
