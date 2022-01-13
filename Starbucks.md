@@ -539,3 +539,70 @@ Percentage of *non cow milk* drinks that have **at most 5 mg** of cholesterol
 ## F-statistic: 262.9 on 16 and 1130 DF,  p-value: < 2.2e-16
 ```
 
+
+# Model
+
+
+
+```
+## Registered S3 method overwritten by 'tune':
+##   method                   from   
+##   required_pkgs.model_spec parsnip
+```
+
+```
+## -- Attaching packages -------------------------------------- tidymodels 0.1.4 --
+```
+
+```
+## v broom        0.7.10     v rsample      0.1.1 
+## v dials        0.0.10     v tune         0.1.6 
+## v infer        1.0.0      v workflows    0.2.4 
+## v modeldata    0.1.1      v workflowsets 0.1.0 
+## v parsnip      0.1.7      v yardstick    0.0.9 
+## v recipes      0.1.17
+```
+
+```
+## -- Conflicts ----------------------------------------- tidymodels_conflicts() --
+## x scales::discard() masks purrr::discard()
+## x dplyr::filter()   masks stats::filter()
+## x recipes::fixed()  masks stringr::fixed()
+## x dplyr::lag()      masks stats::lag()
+## x yardstick::spec() masks readr::spec()
+## x recipes::step()   masks stats::step()
+## * Dig deeper into tidy modeling with R at https://www.tmwr.org
+```
+
+```
+## # A tibble: 13 x 3
+##    .metric              .estimator .estimate
+##    <chr>                <chr>          <dbl>
+##  1 sens                 binary         0.933
+##  2 recall               binary         0.933
+##  3 f_meas               binary         0.924
+##  4 ppv                  binary         0.915
+##  5 precision            binary         0.915
+##  6 accuracy             binary         0.889
+##  7 bal_accuracy         binary         0.854
+##  8 npv                  binary         0.816
+##  9 spec                 binary         0.775
+## 10 detection_prevalence binary         0.736
+## 11 mcc                  binary         0.719
+## 12 kap                  binary         0.719
+## 13 j_index              binary         0.708
+```
+
+![](Starbucks_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
+
+
+![](Starbucks_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
+
+```
+## # A tibble: 2 x 4
+##   .metric  .estimator .estimate .config             
+##   <chr>    <chr>          <dbl> <chr>               
+## 1 accuracy binary         0.799 Preprocessor1_Model1
+## 2 roc_auc  binary         0.878 Preprocessor1_Model1
+```
+

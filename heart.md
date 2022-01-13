@@ -124,24 +124,24 @@ editor_options:
 
 ```
 ## # A tibble: 16 x 5
-##    term                           estimate std.error statistic  p.value
-##    <chr>                             <dbl>     <dbl>     <dbl>    <dbl>
-##  1 st_slope_Up                      1.31       0.690     1.90  0.0569  
-##  2 sex_M                           -1.21       0.368    -3.30  0.000982
-##  3 age                             -1.06       0.357    -2.97  0.00300 
-##  4 cholesterol                     -1.01       0.382    -2.64  0.00823 
-##  5 exerciseangina_Y                -0.992      0.336    -2.95  0.00314 
-##  6 restingecg_ST                    0.905      0.423     2.14  0.0324  
-##  7 restingecg_Normal                0.843      0.353     2.39  0.0170  
-##  8 st_slope_Flat                   -0.611      0.628    -0.973 0.331   
-##  9 restingbp                       -0.501      0.349    -1.44  0.151   
-## 10 chestpaintype_Atypical.Angina    0.481      0.358     1.35  0.179   
-## 11 chestpaintype_Non.Anginal.Pain   0.346      0.313     1.10  0.270   
-## 12 maxhr                           -0.248      0.364    -0.681 0.496   
-## 13 chestpaintype_Typical.Angina    -0.240      0.292    -0.821 0.412   
-## 14 (Intercept)                      0.214      0.310     0.689 0.491   
-## 15 oldpeak                         -0.148      0.371    -0.398 0.691   
-## 16 fastingbs_X1                    -0.0782     0.327    -0.239 0.811
+##    term                           estimate std.error statistic      p.value
+##    <chr>                             <dbl>     <dbl>     <dbl>        <dbl>
+##  1 sex_M                           -0.879      0.162    -5.43  0.0000000550
+##  2 st_slope_Flat                   -0.799      0.307    -2.60  0.00930     
+##  3 chestpaintype_Atypical.Angina    0.752      0.175     4.30  0.0000171   
+##  4 chestpaintype_Non.Anginal.Pain   0.724      0.148     4.91  0.000000932 
+##  5 oldpeak                         -0.573      0.182    -3.15  0.00163     
+##  6 chestpaintype_Typical.Angina     0.528      0.130     4.07  0.0000474   
+##  7 st_slope_Up                      0.415      0.332     1.25  0.211       
+##  8 exerciseangina_Y                -0.334      0.151    -2.21  0.0269      
+##  9 (Intercept)                      0.287      0.145     1.98  0.0475      
+## 10 age                             -0.217      0.167    -1.30  0.195       
+## 11 restingbp                       -0.195      0.149    -1.31  0.192       
+## 12 fastingbs_X1                    -0.156      0.144    -1.08  0.281       
+## 13 restingecg_ST                   -0.140      0.172    -0.816 0.414       
+## 14 cholesterol                     -0.0604     0.136    -0.443 0.658       
+## 15 restingecg_Normal               -0.0545     0.166    -0.329 0.742       
+## 16 maxhr                            0.0424     0.166     0.255 0.799
 ```
 
 ## Model of Largestest Estimates
