@@ -118,7 +118,7 @@ heart_fit %>% collect_metrics()
 heart_fit %>% collect_predictions() %>% roc_curve(heartdisease, .pred_1) %>% autoplot()
 
 fitted_heart <- heart_wkfl %>%
-  fit(data = heart_test)
+  fit(data = heart_train)
 
 fitted_heart %>% tidy() %>% arrange(-abs(estimate))
 
@@ -149,7 +149,7 @@ model_res <- heart_fit2 %>%
   group_by(model) %>%
   roc_curve(heartdisease, .pred_1)
 
-model_res %>% autoplot() + labs(title = "ROC Curves", subtitle = "Model One: 11 Predictors,
+model_res %>% autoplot() + labs(title = "ROC Curves", subtitle = "Model One: 11 Predictors
 Model Two: 4 Predictors")
 
 ```
