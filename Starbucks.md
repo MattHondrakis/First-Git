@@ -813,19 +813,19 @@ conf_mat(df_results, status, .pred_class) %>% summary() %>% arrange(-.estimate)
     ## # A tibble: 13 x 3
     ##    .metric              .estimator .estimate
     ##    <chr>                <chr>          <dbl>
-    ##  1 sens                 binary         0.933
-    ##  2 recall               binary         0.933
-    ##  3 f_meas               binary         0.924
-    ##  4 ppv                  binary         0.915
-    ##  5 precision            binary         0.915
+    ##  1 sens                 binary         0.928
+    ##  2 recall               binary         0.928
+    ##  3 f_meas               binary         0.923
+    ##  4 ppv                  binary         0.919
+    ##  5 precision            binary         0.919
     ##  6 accuracy             binary         0.889
-    ##  7 bal_accuracy         binary         0.854
-    ##  8 npv                  binary         0.816
-    ##  9 spec                 binary         0.775
-    ## 10 detection_prevalence binary         0.736
-    ## 11 mcc                  binary         0.719
-    ## 12 kap                  binary         0.719
-    ## 13 j_index              binary         0.708
+    ##  7 bal_accuracy         binary         0.858
+    ##  8 npv                  binary         0.808
+    ##  9 spec                 binary         0.788
+    ## 10 detection_prevalence binary         0.729
+    ## 11 mcc                  binary         0.721
+    ## 12 kap                  binary         0.721
+    ## 13 j_index              binary         0.715
 
 ``` r
 df_results %>%
@@ -838,9 +838,13 @@ df_results %>%
 ``` r
 df_wkfl <- workflow() %>%
   add_model(model) %>%
-  add_formula(status ~ sodium_mg) %>%
+  add_formula(status ~ sodium_mg * size) %>%
   last_fit(df_split)
+```
 
+    ## ! train/test split: preprocessor 1/1, model 1/1 (predictions): prediction from a rank-defici...
+
+``` r
 df_wkfl %>% collect_predictions() %>% roc_curve(status, .pred_FALSE) %>% autoplot()
 ```
 
@@ -853,5 +857,5 @@ df_wkfl %>% collect_metrics()
     ## # A tibble: 2 x 4
     ##   .metric  .estimator .estimate .config             
     ##   <chr>    <chr>          <dbl> <chr>               
-    ## 1 accuracy binary         0.788 Preprocessor1_Model1
-    ## 2 roc_auc  binary         0.864 Preprocessor1_Model1
+    ## 1 accuracy binary         0.865 Preprocessor1_Model1
+    ## 2 roc_auc  binary         0.918 Preprocessor1_Model1
