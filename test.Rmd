@@ -15,7 +15,6 @@ always_allow_html: true
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, dpi = 500)
 library(tidyverse)
 library(GGally)
-library(plotly)
 theme_set(theme_bw())
 ```
 
@@ -173,15 +172,6 @@ gplot(stest, writing, `race/ethnicity`) + geom_density()
 
 gplot(stest, writing, `race/ethnicity`) + geom_boxplot() + theme(axis.text.y = element_blank(),
                                                               axis.ticks.y = element_blank())
-```
-
-# Plotly
-
-```{r}
-p <- stest %>%
-  ggplot(aes(math, color = `test prep`)) + geom_density() +
-  theme_bw() + facet_wrap(~ `race/ethnicity`)
-ggplotly(p)
 ```
 
 # Scrap
