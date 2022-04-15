@@ -1,23 +1,26 @@
 ---
-title: "Highschool Test Scores"
-author: "Matthew Hondrakis"
-output: 
-  html_document:
-    toc: true
-    toc_float: true
-date: "`r format(Sys.time(), '%d %B %Y')`"
-editor_options: 
+title: "Students Tests"
+author: "Matthew"
+date: "1/11/2022"
+output: github_document
+editor_options:
   chunk_output_type: console
+always_allow_html: true
 ---
 
 # Student Test Scores
 
 
 ```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, dpi = 500)
 library(tidyverse)
 library(GGally)
 library(plotly)
 theme_set(theme_bw())
+```
+
+
+```{r, include=FALSE}
 stest <- read_csv("StudentsPerformance.csv", col_types = "fffffddd")
 stest <- stest %>%
   rename(`parent ed` =`parental level of education`,
