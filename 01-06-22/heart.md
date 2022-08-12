@@ -3,6 +3,21 @@ Heart
 Matthew
 1/6/2022
 
+-   <a href="#explore" id="toc-explore">Explore</a>
+    -   <a href="#sex" id="toc-sex">Sex</a>
+    -   <a href="#max-heart-rate" id="toc-max-heart-rate">Max Heart rate</a>
+    -   <a href="#resting-ecg" id="toc-resting-ecg">Resting ECG</a>
+    -   <a href="#cholesterol" id="toc-cholesterol">Cholesterol</a>
+    -   <a href="#checking-numeric-columns"
+        id="toc-checking-numeric-columns">Checking Numeric columns</a>
+    -   <a href="#oldpeak" id="toc-oldpeak">Oldpeak</a>
+    -   <a href="#exercise" id="toc-exercise">Exercise</a>
+-   <a href="#model" id="toc-model">Model</a>
+    -   <a href="#model-of-largestest-estimates"
+        id="toc-model-of-largestest-estimates">Model of Largestest Estimates</a>
+    -   <a href="#plot-both" id="toc-plot-both">Plot both</a>
+        -   <a href="#metrics" id="toc-metrics">Metrics</a>
+
 # Explore
 
 ## Sex
@@ -152,7 +167,7 @@ library(tidymodels)
     ## x yardstick::spec() masks readr::spec()
     ## x recipes::step()   masks stats::step()
     ## x tune::tune()      masks parsnip::tune()
-    ## * Use suppressPackageStartupMessages() to eliminate package startup messages
+    ## * Use tidymodels_prefer() to resolve common conflicts.
 
 ``` r
 set.seed(123)
