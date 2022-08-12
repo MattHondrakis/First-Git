@@ -3,6 +3,29 @@ Starbucks
 Matthew
 12/22/2021
 
+-   <a href="#calories" id="toc-calories">Calories</a>
+    -   <a href="#by-milk" id="toc-by-milk">By Milk</a>
+        -   <a href="#preliminary-statistical-analysis"
+            id="toc-preliminary-statistical-analysis">Preliminary Statistical
+            Analysis</a>
+    -   <a href="#by-size" id="toc-by-size">By Size</a>
+    -   <a href="#by-carbs-and-fat" id="toc-by-carbs-and-fat">By Carbs and
+        Fat</a>
+-   <a href="#caffeine" id="toc-caffeine">Caffeine</a>
+-   <a href="#carbs-fiber-and-sugar" id="toc-carbs-fiber-and-sugar">Carbs,
+    Fiber and Sugar</a>
+-   <a href="#serving-size-and-ml" id="toc-serving-size-and-ml">Serving size
+    and mL</a>
+    -   <a href="#calories-by-size-ml-for-venti"
+        id="toc-calories-by-size-ml-for-venti">Calories by size mL for Venti</a>
+-   <a href="#sodium" id="toc-sodium">Sodium</a>
+    -   <a href="#chocolate" id="toc-chocolate">Chocolate</a>
+    -   <a href="#frappuccino" id="toc-frappuccino">Frappuccino</a>
+        -   <a href="#ttest" id="toc-ttest">T.test</a>
+-   <a href="#cholesterol" id="toc-cholesterol">Cholesterol</a>
+-   <a href="#total-fat" id="toc-total-fat">Total fat</a>
+-   <a href="#model" id="toc-model">Model</a>
+
 # Calories
 
 ``` r
@@ -424,7 +447,8 @@ starbucks %>%
   arrange(-m_sodium)
 ```
 
-    ## `summarise()` has grouped output by 'chocolate'. You can override using the `.groups` argument.
+    ## `summarise()` has grouped output by 'chocolate'. You can override using the
+    ## `.groups` argument.
 
     ## # A tibble: 10 x 3
     ## # Groups:   chocolate [2]
@@ -477,7 +501,8 @@ starbucks %>%
   arrange(-m_sodium)
 ```
 
-    ## `summarise()` has grouped output by 'frappuccino'. You can override using the `.groups` argument.
+    ## `summarise()` has grouped output by 'frappuccino'. You can override using the
+    ## `.groups` argument.
 
     ## # A tibble: 9 x 3
     ## # Groups:   frappuccino [2]
@@ -770,12 +795,12 @@ library(tidymodels)
 
     ## -- Attaching packages -------------------------------------- tidymodels 0.1.4 --
 
-    ## v broom        0.7.10     v rsample      0.1.1 
-    ## v dials        0.0.10     v tune         0.1.6 
+    ## v broom        0.7.12     v rsample      0.1.1 
+    ## v dials        0.1.0      v tune         0.1.6 
     ## v infer        1.0.0      v workflows    0.2.4 
-    ## v modeldata    0.1.1      v workflowsets 0.1.0 
-    ## v parsnip      0.1.7      v yardstick    0.0.9 
-    ## v recipes      0.1.17
+    ## v modeldata    0.1.1      v workflowsets 0.2.1 
+    ## v parsnip      0.2.0      v yardstick    0.0.9 
+    ## v recipes      0.2.0
 
     ## -- Conflicts ----------------------------------------- tidymodels_conflicts() --
     ## x scales::discard() masks purrr::discard()
@@ -784,7 +809,8 @@ library(tidymodels)
     ## x dplyr::lag()      masks stats::lag()
     ## x yardstick::spec() masks readr::spec()
     ## x recipes::step()   masks stats::step()
-    ## * Use suppressPackageStartupMessages() to eliminate package startup messages
+    ## x tune::tune()      masks parsnip::tune()
+    ## * Search for functions across packages at https://www.tidymodels.org/find/
 
 ``` r
 df_split <- initial_split(df, strata = status)
@@ -813,19 +839,19 @@ conf_mat(df_results, status, .pred_class) %>% summary() %>% arrange(-.estimate)
     ## # A tibble: 13 x 3
     ##    .metric              .estimator .estimate
     ##    <chr>                <chr>          <dbl>
-    ##  1 sens                 binary         0.928
-    ##  2 recall               binary         0.928
-    ##  3 f_meas               binary         0.923
-    ##  4 ppv                  binary         0.919
-    ##  5 precision            binary         0.919
-    ##  6 accuracy             binary         0.889
-    ##  7 bal_accuracy         binary         0.858
-    ##  8 npv                  binary         0.808
-    ##  9 spec                 binary         0.788
-    ## 10 detection_prevalence binary         0.729
-    ## 11 mcc                  binary         0.721
-    ## 12 kap                  binary         0.721
-    ## 13 j_index              binary         0.715
+    ##  1 sens                 binary         0.938
+    ##  2 recall               binary         0.938
+    ##  3 f_meas               binary         0.931
+    ##  4 ppv                  binary         0.924
+    ##  5 precision            binary         0.924
+    ##  6 accuracy             binary         0.899
+    ##  7 bal_accuracy         binary         0.869
+    ##  8 npv                  binary         0.831
+    ##  9 spec                 binary         0.8  
+    ## 10 mcc                  binary         0.746
+    ## 11 kap                  binary         0.746
+    ## 12 j_index              binary         0.738
+    ## 13 detection_prevalence binary         0.733
 
 ``` r
 df_results %>%
@@ -840,11 +866,7 @@ df_wkfl <- workflow() %>%
   add_model(model) %>%
   add_formula(status ~ sodium_mg * size) %>%
   last_fit(df_split)
-```
 
-    ## ! train/test split: preprocessor 1/1, model 1/1 (predictions): prediction from a rank-defici...
-
-``` r
 df_wkfl %>% collect_predictions() %>% roc_curve(status, .pred_FALSE) %>% autoplot()
 ```
 
@@ -857,5 +879,5 @@ df_wkfl %>% collect_metrics()
     ## # A tibble: 2 x 4
     ##   .metric  .estimator .estimate .config             
     ##   <chr>    <chr>          <dbl> <chr>               
-    ## 1 accuracy binary         0.865 Preprocessor1_Model1
-    ## 2 roc_auc  binary         0.918 Preprocessor1_Model1
+    ## 1 accuracy binary         0.840 Preprocessor1_Model1
+    ## 2 roc_auc  binary         0.911 Preprocessor1_Model1
