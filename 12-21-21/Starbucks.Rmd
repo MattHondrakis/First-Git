@@ -404,6 +404,7 @@ df <- starbucks %>%
 ```
 
 ```{r}
+set.seed(123)
 library(tidymodels)
 df_split <- initial_split(df, strata = status)
 
@@ -414,34 +415,26 @@ model <- logistic_reg() %>%
   set_engine('glm') %>%
   set_mode('classification')
 
-df_fit <- model %>%
-  fit(status ~ sodium_mg + calories + whip + milk, data = df_training)
-
-pred_class <- df_fit %>% predict(df_testing, type = 'class')
-
-pred_prob <- df_fit %>% predict(df_testing, type = 'prob')
-
-df_results <- df_testing %>%
-  select(status) %>%
-  bind_cols(pred_class, pred_prob)
-
-conf_mat(df_results, status, .pred_class) %>% summary() %>% arrange(-.estimate)
-
-df_results %>%
-  roc_curve(status, .pred_FALSE) %>%
-  autoplot()
-
-```
-
-
-```{r}
-df_wkfl <- workflow() %>%
-  add_model(model) %>%
-  add_formula(status ~ sodium_mg * size) %>%
+first_wkfl <- workflow() %>% 
+  add_model(model) %>% 
+  add_formula(status ~ sodium_mg + calories + whip + milk) %>% 
   last_fit(df_split)
 
-df_wkfl %>% collect_predictions() %>% roc_curve(status, .pred_FALSE) %>% autoplot()
+first_wkfl %>% 
+  collect_predictions() %>% roc_curve(status, .pred_FALSE) %>% autoplot()
 
-df_wkfl %>% collect_metrics()
+first_wkfl %>% collect_metrics()
+```
+
+## Only Sodium
+```{r}
+second_wkfl <- workflow() %>%
+  add_model(model) %>%
+  add_formula(status ~ sodium_mg) %>%
+  last_fit(df_split)
+
+second_wkfl %>% collect_predictions() %>% roc_curve(status, .pred_FALSE) %>% autoplot()
+
+second_wkfl %>% collect_metrics()
 ```
 

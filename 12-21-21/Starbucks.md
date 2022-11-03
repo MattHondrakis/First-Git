@@ -25,6 +25,7 @@ Matthew
 -   <a href="#cholesterol" id="toc-cholesterol">Cholesterol</a>
 -   <a href="#total-fat" id="toc-total-fat">Total fat</a>
 -   <a href="#model" id="toc-model">Model</a>
+    -   <a href="#only-sodium" id="toc-only-sodium">Only Sodium</a>
 
 # Calories
 
@@ -786,6 +787,7 @@ df <- starbucks %>%
 ```
 
 ``` r
+set.seed(123)
 library(tidymodels)
 ```
 
@@ -810,7 +812,7 @@ library(tidymodels)
     ## x yardstick::spec() masks readr::spec()
     ## x recipes::step()   masks stats::step()
     ## x tune::tune()      masks parsnip::tune()
-    ## * Search for functions across packages at https://www.tidymodels.org/find/
+    ## * Dig deeper into tidy modeling with R at https://www.tmwr.org
 
 ``` r
 df_split <- initial_split(df, strata = status)
@@ -822,62 +824,50 @@ model <- logistic_reg() %>%
   set_engine('glm') %>%
   set_mode('classification')
 
-df_fit <- model %>%
-  fit(status ~ sodium_mg + calories + whip + milk, data = df_training)
-
-pred_class <- df_fit %>% predict(df_testing, type = 'class')
-
-pred_prob <- df_fit %>% predict(df_testing, type = 'prob')
-
-df_results <- df_testing %>%
-  select(status) %>%
-  bind_cols(pred_class, pred_prob)
-
-conf_mat(df_results, status, .pred_class) %>% summary() %>% arrange(-.estimate)
+first_wkfl <- workflow() %>% 
+  add_model(model) %>% 
+  add_formula(status ~ sodium_mg + calories + whip + milk) %>% 
+  last_fit(df_split)
 ```
 
-    ## # A tibble: 13 x 3
-    ##    .metric              .estimator .estimate
-    ##    <chr>                <chr>          <dbl>
-    ##  1 sens                 binary         0.938
-    ##  2 recall               binary         0.938
-    ##  3 f_meas               binary         0.931
-    ##  4 ppv                  binary         0.924
-    ##  5 precision            binary         0.924
-    ##  6 accuracy             binary         0.899
-    ##  7 bal_accuracy         binary         0.869
-    ##  8 npv                  binary         0.831
-    ##  9 spec                 binary         0.8  
-    ## 10 mcc                  binary         0.746
-    ## 11 kap                  binary         0.746
-    ## 12 j_index              binary         0.738
-    ## 13 detection_prevalence binary         0.733
+    ## ! train/test split: preprocessor 1/1, model 1/1: glm.fit: fitted probabilities numerically 0...
 
 ``` r
-df_results %>%
-  roc_curve(status, .pred_FALSE) %>%
-  autoplot()
+first_wkfl %>% 
+  collect_predictions() %>% roc_curve(status, .pred_FALSE) %>% autoplot()
 ```
 
 ![](Starbucks_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
 
 ``` r
-df_wkfl <- workflow() %>%
-  add_model(model) %>%
-  add_formula(status ~ sodium_mg * size) %>%
-  last_fit(df_split)
-
-df_wkfl %>% collect_predictions() %>% roc_curve(status, .pred_FALSE) %>% autoplot()
-```
-
-![](Starbucks_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
-
-``` r
-df_wkfl %>% collect_metrics()
+first_wkfl %>% collect_metrics()
 ```
 
     ## # A tibble: 2 x 4
     ##   .metric  .estimator .estimate .config             
     ##   <chr>    <chr>          <dbl> <chr>               
-    ## 1 accuracy binary         0.840 Preprocessor1_Model1
-    ## 2 roc_auc  binary         0.911 Preprocessor1_Model1
+    ## 1 accuracy binary         0.889 Preprocessor1_Model1
+    ## 2 roc_auc  binary         0.959 Preprocessor1_Model1
+
+## Only Sodium
+
+``` r
+second_wkfl <- workflow() %>%
+  add_model(model) %>%
+  add_formula(status ~ sodium_mg) %>%
+  last_fit(df_split)
+
+second_wkfl %>% collect_predictions() %>% roc_curve(status, .pred_FALSE) %>% autoplot()
+```
+
+![](Starbucks_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
+
+``` r
+second_wkfl %>% collect_metrics()
+```
+
+    ## # A tibble: 2 x 4
+    ##   .metric  .estimator .estimate .config             
+    ##   <chr>    <chr>          <dbl> <chr>               
+    ## 1 accuracy binary         0.812 Preprocessor1_Model1
+    ## 2 roc_auc  binary         0.895 Preprocessor1_Model1
